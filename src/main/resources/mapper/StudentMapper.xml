@@ -135,7 +135,13 @@
 	left join tbl_dept d on s.`d_id`=d.`dept_id`
     where stu_id = #{stuId,jdbcType=INTEGER}
   </select>
-  
+  <select id="selectByStuName" resultMap="WithDeptResultMap">
+    select
+    <include refid="WithDept_Column_List" />
+    FROM tbl_stu s
+    left join tbl_dept d on s.`d_id`=d.`dept_id`
+    where stu_name = #{stuName}
+  </select>
   
   
   
@@ -199,7 +205,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <update id="updateByExampleSelective" parameterType="map">
     update tbl_stu
     <set>
       <if test="record.stuId != null">

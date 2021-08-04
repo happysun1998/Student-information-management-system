@@ -67,6 +67,13 @@ public class StudentController {
         return Msg.success().add("stu",student);
     }
 
+    @RequestMapping(value = "/stu/sn/{name}", method = RequestMethod.GET)
+    @ResponseBody
+    public Msg getStuByName(@PathVariable("name") String name) {
+        Student student = studentService.getStuByName(name);
+        return Msg.success().add("stu",student);
+    }
+
     @RequestMapping(value = "/checkuser")
     @ResponseBody
     public Msg checkUser(@RequestParam(value = "stuName") String stuName) {

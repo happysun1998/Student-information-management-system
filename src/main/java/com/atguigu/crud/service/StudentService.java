@@ -45,6 +45,11 @@ public class StudentService {
         return student;
     }
 
+    public Student getStuByName(String stuName) {
+        Student student = studentMapper.selectByStuName(stuName);
+        return student;
+    }
+
     public void updateStu(Student student) {
         studentMapper.updateByPrimaryKeySelective(student);
     }

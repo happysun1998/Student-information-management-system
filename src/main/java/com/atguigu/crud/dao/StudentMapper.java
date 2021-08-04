@@ -32,5 +32,5 @@ public interface StudentMapper {
 
     Student selectByPrimaryKeyWithDept(Integer stuId);
 
-
+    Student selectByStuName(String stuName);
 }

@@ -135,13 +135,23 @@
     <%--标题--%>
     <div class="row">
         <div class="col-md-12">
-            <h1>SSM学生信息管理系统</h1>
+            <h1>学生信息管理系统</h1>
         </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="输入学生姓名" size="10" id="stuName">
+                    <span class="input-group-btn">
+        <button class="btn btn-default" type="button" id="searchByStuName">搜索</button>
+      </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
     </div>
     <%--按钮--%>
     <div class="row">
         <div class="col-md-4 col-md-offset-9">
-            <button class="btn btn-primary" id="emp_add_modal_btn">新增</button>
+            <button class="btn btn-primary" id="stu_add_modal_btn">新增</button>
             <button class="btn btn-danger" id="stu_delete_all_btn">批量删除</button>
         </div>
 
@@ -355,7 +365,7 @@
     }
 
     /*点击新增按钮弹出模态框*/
-    $("#emp_add_modal_btn").click(function () {
+    $("#stu_add_modal_btn").click(function () {
         //清楚表单数据（表单重置）
         reset_form("#stuAddModal form");
         // $("#stuAddModal form")[0].reset();
@@ -574,38 +584,38 @@
 
     //完成全选和全不选
     $("#check_all").click(function () {
-        $(".check_item").prop("checked",$(this).prop("checked"));
+        $(".check_item").prop("checked", $(this).prop("checked"));
     });
 
     //check_item
-    $(document).on("click",".check_item",function(){
+    $(document).on("click", ".check_item", function () {
         //判断当前选择中的元素是否5个
-        var flag = $(".check_item:checked").length==$(".check_item").length;
-        $("#check_all").prop("checked",flag);
+        var flag = $(".check_item:checked").length == $(".check_item").length;
+        $("#check_all").prop("checked", flag);
     });
 
     // stu_delete_all_btn
     //点击全部删除，就批量删除
-    $("#stu_delete_all_btn").click(function(){
+    $("#stu_delete_all_btn").click(function () {
         //
         var empNames = "";
         var del_idstr = "";
-        $.each($(".check_item:checked"),function(){
+        $.each($(".check_item:checked"), function () {
             //this
-            empNames += $(this).parents("tr").find("td:eq(2)").text()+",";
+            empNames += $(this).parents("tr").find("td:eq(2)").text() + ",";
             //组装员工id字符串
-            del_idstr += $(this).parents("tr").find("td:eq(1)").text()+"-";
+            del_idstr += $(this).parents("tr").find("td:eq(1)").text() + "-";
         });
         //去除empNames多余的,
-        empNames = empNames.substring(0, empNames.length-1);
+        empNames = empNames.substring(0, empNames.length - 1);
         //去除删除的id多余的-
-        del_idstr = del_idstr.substring(0, del_idstr.length-1);
-        if(confirm("确认删除【"+empNames+"】吗？")){
+        del_idstr = del_idstr.substring(0, del_idstr.length - 1);
+        if (confirm("确认删除【" + empNames + "】吗？")) {
             //发送ajax请求删除
             $.ajax({
-                url:"${APP_PATH}/stu/"+del_idstr,
-                type:"DELETE",
-                success:function(result){
+                url: "${APP_PATH}/stu/" + del_idstr,
+                type: "DELETE",
+                success: function (result) {
                     alert(result.msg);
                     //回到当前页面
                     to_page(currentPage);
@@ -613,6 +623,57 @@
             });
         }
     });
+
+    /*点击新增按钮弹出模态框*/
+    $("#searchByStuName").click(function () {
+        var name = $("#stuName").val();
+        getStuByName(name)
+    });
+
+    function getStuByName(name) {
+        $.ajax({
+            url: "${APP_PATH}/stu/sn/" + name,
+            type: "GET",
+            success: function (result) {
+                var stuEle = result.mapData.stu;
+                // alert(stuEle)
+                $("#emps_table tbody").empty();
+                //获取到学生信息中每项信息
+                var checkBoxTd = $("<td><input type='checkbox' class='check_item'/></td>");
+                var empIdTd = $("<td></td>").append(stuEle.stuId);
+                var empNameTd = $("<td></td>").append(stuEle.stuName);
+                var genderTd = $("<td></td>").append(stuEle.gender == 'M' ? "男" : "女");
+                var emailTd = $("<td></td>").append(stuEle.email);
+                var deptNameTd = $("<td></td>").append(stuEle.department.deptName);
+                //每行中的编辑按钮
+                var editBtn = $("<button></button>").addClass("btn btn-primary btn-sm edit_btn")
+                    .append($("<span></span>").addClass("glyphicon glyphicon-pencil")).append("编辑");
+                //为编辑按钮添加一个自定义属性，表示当前学生的id
+                editBtn.attr("edit-id", stuEle.stuId);
+                //每行中的删除按钮
+                var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete_btn")
+                    .append($("<span></span>").addClass("glyphicon glyphicon-trash")).append("删除");
+                //为删除按钮添加一个自定义属性，表示当前学生的id
+                delBtn.attr("del-id", stuEle.stuId);
+
+                //将两个按钮整合在一起
+                var btnTd = $("<td></td>").append(editBtn).append(" ").append(delBtn);
+
+                //将以上数据拼成一行
+                $("<tr></tr>")
+                    .append(checkBoxTd)
+                    .append(empIdTd)
+                    .append(empNameTd)
+                    .append(genderTd)
+                    .append(emailTd)
+                    .append(deptNameTd)
+                    .append(btnTd)
+                    .appendTo("#emps_table tbody");
+            }
+        });
+    }
+
+
 </script>
 </body>
 </html>
