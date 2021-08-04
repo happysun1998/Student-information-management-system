@@ -568,8 +568,7 @@
         var stuName = $(this).parents("tr").find("td:eq(2)").text();
         var stuId = $(this).attr("del-id");
         // alert($(this).parents("tr").find("td:eq(2)").text());
-        if (confirm("确认删除【" + stuName + "】吗？")) ;
-        {
+        if (confirm("确认删除【" + stuName + "】吗？")) {
             $.ajax({
                 url: "${APP_PATH}/stu/" + stuId,
                 type: "DELETE",
